@@ -1,8 +1,12 @@
+import { motion } from 'framer-motion'
+import Cursor from '../components/Cursor'
+
 const Home: React.FC = () => {
   return (
-    <div>
+    <motion.div>
+      <Cursor />
       <p>Home!</p>
-    </div>
+    </motion.div>
   )
 }
 
