@@ -10,23 +10,26 @@ if (process.platform === 'win32') {
 } else if (process.platform === 'darwin') {
   iconPath = join(__dirname, '../../build/icon.icns')
 }
+let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    icon: iconPath, // Use the iconPath variable
+    icon: iconPath,
+    frame: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
       sandbox: false
     }
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -42,7 +45,26 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+ipcMain.handle('minimize-window', () => {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) win.minimize()
+})
 
+ipcMain.handle('maximize-window', () => {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) {
+    if (win.isMaximized()) {
+      win.unmaximize()
+    } else {
+      win.maximize()
+    }
+  }
+})
+
+ipcMain.handle('close-window', () => {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) win.close()
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
