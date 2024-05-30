@@ -6,14 +6,6 @@ interface CursorDivProps {
   hovering: string
 }
 
-declare global {
-  interface Window {
-    api: {
-      invoke: (channel: string, ...args: unknown[]) => Promise<unknown>
-    }
-  }
-}
-
 const CursorDiv = styled(motion.div)<CursorDivProps>`
   position: fixed;
   top: 0;
@@ -60,28 +52,12 @@ const Cursor: React.FC = () => {
       }
     }
 
-    const clickButtons = (e: MouseEvent): void => {
-      switch ((e.target as HTMLElement).id) {
-        case 'minimize-button':
-          window.api.invoke('minimize-window')
-          break
-        case 'maximize-button':
-          window.api.invoke('maximize-window')
-          break
-        case 'close-button':
-          window.api.invoke('close-window')
-          break
-      }
-    }
-
     window.addEventListener('mousemove', moveCursor)
     window.addEventListener('mouseover', hoverButtons)
-    window.addEventListener('click', clickButtons)
 
     return () => {
       window.removeEventListener('mousemove', moveCursor)
       window.removeEventListener('mouseover', hoverButtons)
-      window.removeEventListener('click', clickButtons)
     }
   }, [cursorX, cursorY])
 
@@ -90,11 +66,13 @@ const Cursor: React.FC = () => {
   const cursorYSpring = useSpring(cursorY, springConfig)
 
   return (
-    <CursorDiv
-      id="cursor"
-      style={{ x: cursorXSpring, y: cursorYSpring, translateX: '-50%', translateY: '-50%' }}
-      hovering={hovering}
-    ></CursorDiv>
+    <>
+      <CursorDiv
+        id="cursor"
+        style={{ x: cursorXSpring, y: cursorYSpring, translateX: '-50%', translateY: '-50%' }}
+        hovering={hovering}
+      ></CursorDiv>
+    </>
   )
 }
 

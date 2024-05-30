@@ -10,29 +10,33 @@ if (process.platform === 'win32') {
 } else if (process.platform === 'darwin') {
   iconPath = join(__dirname, '../../build/icon.icns')
 }
-let mainWindow: BrowserWindow | null = null
+
+let win
 
 function createWindow(): void {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+  win = new BrowserWindow({
+    transparent: true,
+    width: 1080,
+    height: 740,
+
     show: false,
     autoHideMenuBar: true,
     icon: iconPath,
     frame: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      contextIsolation: true,
+      contextIsolation: false,
+      nodeIntegration: true,
       sandbox: false
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow?.show()
+  win.on('ready-to-show', () => {
+    win?.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
+  win.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
@@ -40,31 +44,29 @@ function createWindow(): void {
   // HMR for renderer based on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    win.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
-ipcMain.handle('minimize-window', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  if (win) win.minimize()
-})
 
-ipcMain.handle('maximize-window', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  if (win) {
-    if (win.isMaximized()) {
-      win.unmaximize()
-    } else {
-      win.maximize()
-    }
+let windowMaximazed = false
+
+ipcMain.on('close-button', () => {
+  app.quit()
+})
+ipcMain.on('minimize-button', () => {
+  win.minimize()
+})
+ipcMain.on('maximize-button', () => {
+  if (windowMaximazed) {
+    win.unmaximize()
+  } else {
+    win.maximize()
   }
+  windowMaximazed = !windowMaximazed
 })
 
-ipcMain.handle('close-window', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  if (win) win.close()
-})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

@@ -1,11 +1,19 @@
 @import './base.css';
 
+.appContainer {
+  width: 100vw;
+  height: 100vh;
+  background-color: #202127;
+  border-radius: 10px !important;
+}
+
 body {
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background-image: url('./wavy-lines.svg');
+  background-color: transparent !important;
   background-size: cover;
   user-select: none;
 }
@@ -32,6 +40,7 @@ code {
   justify-content: center;
   flex-direction: column;
   margin-bottom: 80px;
+  background-color: #202127 !important;
 }
 
 .logo {

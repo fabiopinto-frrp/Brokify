@@ -1,6 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import SplashScreen from './pages/SplashScreen'
+import Home from './pages/Home/Home'
+import SplashScreen from './pages/SplashScreen/SplashScreen'
 
 function App(): JSX.Element {
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')

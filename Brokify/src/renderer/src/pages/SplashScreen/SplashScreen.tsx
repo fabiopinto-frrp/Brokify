@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import catImage from '../assets/Brokify.png'
+import catImage from '../../assets/Brokify.png'
 import styled from '@emotion/styled'
-import soundFile from '../assets/catMusic.mp3'
-import Cursor from '../components/Cursor'
+import soundFile from '../../assets/catMusic.mp3'
+import Cursor from '../../components/Cursor'
+import TitleBar from '../../components/TitleBar/TitleBar'
+import './splashScreen.css'
 
 const SplashScreen: React.FC = () => {
   const [loading, setLoading] = useState(true)
@@ -35,23 +37,28 @@ const SplashScreen: React.FC = () => {
   `
 
   return loading ? (
-    <motion.div>
+    <>
       <Cursor />
-      <Image
-        src={catImage}
-        alt="cat"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{
-          type: 'spring',
-          stiffness: 260,
-          damping: 20,
-          duration: 2,
-          delay: 0.8
-        }}
-      />
-      <audio ref={audioRef} src={soundFile} />
-    </motion.div>
+      <TitleBar />
+      <div className="splashScreen-container">
+        <motion.div>
+          <Image
+            src={catImage}
+            alt="cat"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 260,
+              damping: 20,
+              duration: 2,
+              delay: 0.8
+            }}
+          />
+          <audio ref={audioRef} src={soundFile} />
+        </motion.div>
+      </div>
+    </>
   ) : null
 }
 
