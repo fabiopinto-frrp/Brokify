@@ -11,8 +11,8 @@ const CursorDiv = styled(motion.div)<CursorDivProps>`
   position: fixed;
   top: 0;
   left: 0;
-  width: 50px;
-  height: 50px;
+  width: 20px;
+  height: 20px;
   border: 2px solid ${(props): string => props.hovering};
   border-radius: 50%;
   pointer-events: none;
