@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useStore } from '../stores/store'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import styled from '@emotion/styled'
 
@@ -25,7 +26,7 @@ const CursorDiv = styled(motion.div)<CursorDivProps>`
 const Cursor: React.FC = () => {
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
-  const [hovering, setHovering] = useState('')
+  const { hovering, setHovering } = useStore()
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent): void => {
@@ -45,7 +46,14 @@ const Cursor: React.FC = () => {
           setHovering('#ea4335')
           break
         case 'title-bar':
-          setHovering('#72b884') // Change this to the color you want for the title bar
+          setHovering('#72b884')
+          break
+
+        case 'side-item':
+          setHovering('#ccab8f')
+          break
+        case 'side-item-bottom':
+          setHovering('#8f95cc')
           break
         default:
           setHovering('#72b884')
