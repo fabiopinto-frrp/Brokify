@@ -15,6 +15,9 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    define: {
+      'process.env.YOUTUBE_API_KEY': JSON.stringify(process.env.YOUTUBE_API_KEY)
+    }
   }
 })

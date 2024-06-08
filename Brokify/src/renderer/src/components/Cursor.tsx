@@ -33,9 +33,30 @@ const Cursor: React.FC = () => {
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
     }
+    const findAncestorWithId = (element: HTMLElement, ids: string[]): string | null => {
+      let currentElement: HTMLElement | null = element
+      while (currentElement) {
+        if (ids.includes(currentElement.id)) {
+          return currentElement.id
+        }
+        currentElement = currentElement.parentElement
+      }
+      return null
+    }
 
     const hoverButtons = (e: MouseEvent): void => {
-      switch ((e.target as HTMLElement).id) {
+      const ids = [
+        'minimize-button',
+        'maximize-button',
+        'close-button',
+        'title-bar',
+        'side-item',
+        'side-item-bottom',
+        'search-bar'
+      ]
+      const foundId = findAncestorWithId(e.target as HTMLElement, ids)
+
+      switch (foundId) {
         case 'minimize-button':
           setHovering('#fbbc05')
           break
@@ -48,12 +69,14 @@ const Cursor: React.FC = () => {
         case 'title-bar':
           setHovering('#72b884')
           break
-
         case 'side-item':
           setHovering('#ccab8f')
           break
         case 'side-item-bottom':
           setHovering('#8f95cc')
+          break
+        case 'search-bar':
+          setHovering('#fff')
           break
         default:
           setHovering('#72b884')

@@ -43,7 +43,7 @@ const Sidebar: React.FC = () => {
           <SideItem>
             <a
               id="side-item-bottom"
-              href="https://www.linkedin.com"
+              href="https://www.linkedin.com/in/fabiopinto-frrp/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
           <SideItem>
             <a
               id="side-item-bottom"
-              href="https://github.com"
+              href="https://github.com/fabiopinto-frrp"
               target="_blank"
               rel="noopener noreferrer"
             >

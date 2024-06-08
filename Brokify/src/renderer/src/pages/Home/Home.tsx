@@ -3,6 +3,8 @@ import Cursor from '../../components/Cursor'
 import TitleBar from '../../components/TitleBar/TitleBar'
 import HomeElement from './HomeElement'
 import Sidebar from '../../components/SideBar/Sidebar'
+import Searchbar from '../../components/SearchBar/Searchbar'
+
 const Home: React.FC = () => {
   return (
     <>
@@ -11,7 +13,7 @@ const Home: React.FC = () => {
         <motion.div>
           <Cursor />
           <Sidebar />
-          <p>Home!</p>
+          <Searchbar />
         </motion.div>
       </HomeElement>
     </>
