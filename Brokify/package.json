@@ -30,8 +30,8 @@
     "electron-updater": "^6.1.7",
     "framer-motion": "^11.2.6",
     "react-icons": "^5.2.1",
+    "react-player": "^2.16.0",
     "react-router-dom": "^6.23.1",
-    "youtube-dl-exec": "^3.0.2",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

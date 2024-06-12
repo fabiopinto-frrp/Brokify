@@ -96,37 +96,36 @@ export const SearchContainer = styled.div`
   align-items: flex-start;
   width: 50rem;
   height: 35rem;
-  margin-top: 12%;
+  margin-top: 0%;
   background-color: #2e2f38;
   border-radius: 10px;
   padding: 10px;
   margin-left: 10%;
   overflow-y: auto;
 
-  /* Custom Scrollbar */
   &::-webkit-scrollbar {
-    width: 12px; /* Width of the scrollbar */
+    width: 12px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #1e1f24; /* Color of the scrollbar track */
-    border-radius: 10px; /* Roundness of the track */
+    background: #1e1f24;
+    border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #8f95cc; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Roundness of the thumb */
-    border: 3px solid #1e1f24; /* Creates a border around the thumb */
+    background: #8f95cc;
+    border-radius: 10px;
+    border: 3px solid #1e1f24;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #5f658c; /* Color of the thumb on hover */
+    background: #5f658c;
   }
 `
 
 export const ResultCard = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
   width: calc(50% - 30px);
   min-height: 10rem;
@@ -148,19 +147,25 @@ export const ResultCard = styled.div`
 `
 
 export const Thumbnail = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 50%;
+  height: 50%;
+  margin-top: 4%;
   border-radius: 10px;
 `
 export const VideoTitle = styled.h3`
-  font-size: 1.2rem;
-  margin: 0;
+  font-size: 1rem;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `
 export const ChannelTitle = styled.p`
-  font-size: 1rem;
-  margin: 0;
-`
-export const Description = styled.p`
-  font-size: 1rem;
-  margin: 0;
+  font-size: 0.8rem;
+  margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `

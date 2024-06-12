@@ -12,6 +12,12 @@ import {
   ChannelTitle
 } from './SearchbarElements'
 import { AiOutlineSearch } from 'react-icons/ai'
+const { ipcRenderer } = require('electron')
+import { useEffect } from 'react'
+
+function requestEnvVariable(): void {
+  ipcRenderer.send('getEnvVariable')
+}
 
 type Video = {
   id: {
@@ -30,17 +36,32 @@ type Video = {
   }
 }
 
-const Searchbar: React.FC = () => {
+const Searchbar: React.FC = (): JSX.Element => {
   const {
     searchResults,
     setSearchResults,
     setSearchBarInputValue,
     searchBarInputValue,
     loading,
-    setLoading
+    setLoading,
+    apiKey,
+    setApiKey,
+    //selectedItem,
+    setSelectedItem
   } = useStore()
 
-  const ApiKey = 'AIzaSyDyz6cfPb1dcrijDGXm9CCqGf7lixH5REo' //process.env.YOUTUBE_API_KEY
+  useEffect(() => {
+    requestEnvVariable()
+    ipcRenderer.on('envVariable', (_, envVariableValue) => {
+      setApiKey(envVariableValue)
+    })
+
+    return () => {
+      ipcRenderer.removeAllListeners('envVariable')
+    }
+  }, [])
+
+  //const ApiKey = 'AIzaSyDyz6cfPb1dcrijDGXm9CCqGf7lixH5REo'
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchBarInputValue(event.target.value)
@@ -57,7 +78,7 @@ const Searchbar: React.FC = () => {
           q: `${searchBarInputValue} music`,
           type: 'video',
           videoCategoryId: '10',
-          key: ApiKey
+          key: apiKey
         }
       })
       setSearchBarInputValue('')
@@ -68,7 +89,11 @@ const Searchbar: React.FC = () => {
       setLoading(false)
     }
   }
+  const handleItemClick = (item: Video): void => {
+    console.log('Item clicked:', item)
 
+    setSelectedItem(item)
+  }
   return (
     <>
       <SearchBarElement id="search-bar">
@@ -92,11 +117,10 @@ const Searchbar: React.FC = () => {
           <div>Loading...</div>
         ) : (
           searchResults.items.map((result: Video) => (
-            <ResultCard key={result.id.videoId}>
+            <ResultCard key={result.id.videoId} onClick={() => handleItemClick(result)}>
               <Thumbnail src={result.snippet.thumbnails.default.url} alt="thumbnail" />
               <VideoTitle>{result.snippet.title}</VideoTitle>
               <ChannelTitle>{result.snippet.channelTitle}</ChannelTitle>
-              {/* <Description>{result.snippet.description}</Description> */}
             </ResultCard>
           ))
         )}

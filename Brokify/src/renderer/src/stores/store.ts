@@ -1,6 +1,5 @@
 import create from 'zustand'
 
-// Define types for the YouTube API response
 type Thumbnail = {
   url: string
   width: number
@@ -46,16 +45,48 @@ type YouTubeSearchResponse = {
   items: SearchResultItem[]
 }
 
-// Update the State type
+type Video = {
+  id: {
+    videoId: string
+  }
+  snippet: {
+    title: string
+    description: string
+    thumbnails: {
+      default: {
+        url: string
+      }
+    }
+    channelTitle: string
+    publishTime: string
+  }
+}
+
 type State = {
   hovering: string
   setHovering: (value: string) => void
   loading: boolean
   setLoading: (value: boolean) => void
-  searchResults: YouTubeSearchResponse // Updated to use YouTubeSearchResponse type
-  setSearchResults: (value: YouTubeSearchResponse) => void // Updated to accept YouTubeSearchResponse
+  searchResults: YouTubeSearchResponse
+  setSearchResults: (value: YouTubeSearchResponse) => void
   setSearchBarInputValue: (value: string) => void
   searchBarInputValue: string
+  apiKey: string
+  setApiKey: (value: string) => void
+  selectedItem: Video
+  setSelectedItem: (value: Video) => void
+  streamUrl: string
+  setStreamUrl: (value: string) => void
+  volume: number
+  setVolume: (volume: number) => void
+  playing: boolean
+  setPlaying: (playing: boolean) => void
+  duration: number
+  setDuration: (duration: number) => void
+  playedSeconds: number
+  setPlayedSeconds: (playedSeconds: number) => void
+  isVisible: boolean
+  setIsVisible: (isVisible: boolean) => void
 }
 
 // Update the useStore definition
@@ -74,5 +105,36 @@ export const useStore = create<State>((set) => ({
   }, // Initialize with default values
   setSearchResults: (value: YouTubeSearchResponse): void => set(() => ({ searchResults: value })),
   setSearchBarInputValue: (value: string): void => set(() => ({ searchBarInputValue: value })),
-  searchBarInputValue: ''
+  searchBarInputValue: '',
+  apiKey: '',
+  setApiKey: (value: string): void => set(() => ({ apiKey: value })),
+  selectedItem: {
+    id: {
+      videoId: ''
+    },
+    snippet: {
+      title: '',
+      description: '',
+      thumbnails: {
+        default: {
+          url: ''
+        }
+      },
+      channelTitle: '',
+      publishTime: ''
+    }
+  },
+  setSelectedItem: (value: Video): void => set(() => ({ selectedItem: value })),
+  streamUrl: '',
+  setStreamUrl: (value: string): void => set(() => ({ streamUrl: value })),
+  volume: 50,
+  playing: false,
+  setVolume: (volume: number): void => set(() => ({ volume })),
+  setPlaying: (playing: boolean): void => set(() => ({ playing })),
+  duration: 0,
+  setDuration: (duration: number): void => set(() => ({ duration })),
+  playedSeconds: 0,
+  setPlayedSeconds: (playedSeconds: number): void => set(() => ({ playedSeconds })),
+  isVisible: false,
+  setIsVisible: (isVisible: boolean): void => set(() => ({ isVisible: isVisible }))
 }))
