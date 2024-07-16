@@ -61,7 +61,7 @@ const Searchbar: React.FC = (): JSX.Element => {
     }
   }, [])
 
-  //const ApiKey = 'AIzaSyDyz6cfPb1dcrijDGXm9CCqGf7lixH5REo'
+  //const ApiKey = 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchBarInputValue(event.target.value)
