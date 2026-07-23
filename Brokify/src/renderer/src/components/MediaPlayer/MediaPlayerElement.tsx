@@ -1,160 +1,239 @@
 import styled from '@emotion/styled'
+import { motion } from 'framer-motion'
+import { theme } from '@renderer/styles/theme'
 
-export const MediaPlayerContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+export const MediaPlayerDock = styled.div`
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-40%);
-  margin-bottom: 2%;
-  width: 65%;
-  height: 15%;
-  background-color: #2e2f38;
-  border-radius: 10px;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  bottom: 16px;
+  left: 236px; /* sidebar left offset (16px) + sidebar width (220px) */
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
   z-index: 1000;
 `
 
-export const MediaButtonContainer = styled.div`
-display: 'flex';\
-flexDirection: 'column';
- alignItems: 'center';
- 
+export const MediaPlayerContainer = styled(motion.div)<{ $collapsed?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  width: ${(props): string =>
+    props.$collapsed ? 'min(280px, calc(100vw - 300px))' : 'min(760px, calc(100vw - 300px))'};
+  padding: ${(props): string => (props.$collapsed ? '6px 14px 8px' : '8px 22px 16px')};
+  background: ${theme.color.panel};
+  backdrop-filter: ${theme.blur.lg};
+  -webkit-backdrop-filter: ${theme.blur.lg};
+  border: 1px solid ${theme.color.panelBorder};
+  border-radius: ${(props): string => (props.$collapsed ? theme.radius.pill : theme.radius.xl)};
+  box-shadow: ${theme.shadow.lift};
+  pointer-events: auto;
 `
 
-export const ImageContainer = styled.div`
-  flex: 1;
+export const PlayerHeaderRow = styled.div`
   display: flex;
-  justify-content: center;
-  border-radius: 10px;
-  margin-top: 10%;
-  margin-bottom: 10%;
-  img {
-    width: 40%;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    border-radius: 10px;
-  }
-`
-export const EmptyImageContainer = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  background-color: #17171c;
-  img {
-    max-width: 100px;
-    background-color: #17171c;
-  }
+  justify-content: flex-end;
+  margin-bottom: 2px;
 `
 
-export const ButtonContainer = styled.div`
-  flex: 1;
+export const CollapseToggle = styled(motion.button)`
   display: flex;
+  align-items: center;
   justify-content: center;
-  button {
-    margin: 0 10px;
-  }
-`
-export const Button = styled.button`
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 2px solid #8f95cc;
-  border-radius: 5px;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid ${theme.color.panelBorder};
+  border-radius: ${theme.radius.pill};
+  background: rgba(255, 255, 255, 0.06);
+  color: ${theme.color.textSecondary};
   cursor: pointer;
-  padding: 4%;
   outline: none;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition:
-    background-color 0.3s ease,
-    box-shadow 0.3s ease;
-  box-shadow: 0 10px 6px -1px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    background-color: rgba(143, 149, 204, 0.6);
-    color: #fff;
-    box-shadow: 0 7px 8px -8px #8f95cc;
+    color: ${theme.color.text};
+    border-color: ${theme.color.panelBorderHover};
+    background: rgba(255, 255, 255, 0.1);
+  }
+`
+
+export const CollapsedRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`
+
+export const ControlsRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+`
+
+export const NowPlayingSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  justify-self: start;
+`
+
+export const ImageContainer = styled.div<{ $compact?: boolean }>`
+  flex-shrink: 0;
+  display: flex;
+
+  img {
+    width: ${(props): string => (props.$compact ? '36px' : '56px')};
+    height: ${(props): string => (props.$compact ? '36px' : '56px')};
+    object-fit: cover;
+    border-radius: ${(props): string => (props.$compact ? theme.radius.pill : theme.radius.md)};
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+`
+export const EmptyImageContainer = styled.div<{ $compact?: boolean }>`
+  flex-shrink: 0;
+  width: ${(props): string => (props.$compact ? '36px' : '56px')};
+  height: ${(props): string => (props.$compact ? '36px' : '56px')};
+  border-radius: ${(props): string => (props.$compact ? theme.radius.pill : theme.radius.md)};
+  background: rgba(255, 255, 255, 0.05);
+`
+
+export const TrackInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+`
+
+export const TrackTitle = styled.div`
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: ${theme.color.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const TrackArtist = styled.div`
+  font-size: 0.76rem;
+  color: ${theme.color.textSecondary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+export const TransportControls = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  justify-self: center;
+`
+
+export const Button = styled(motion.button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${theme.color.textSecondary};
+  background: transparent;
+  border: none;
+  border-radius: ${theme.radius.pill};
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  outline: none;
+
+  &:hover {
+    color: ${theme.color.text};
+  }
+`
+
+export const PlayButton = styled(motion.button)<{ $compact?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #14151a;
+  background: ${theme.color.accentGradient};
+  border: none;
+  border-radius: ${theme.radius.pill};
+  cursor: pointer;
+  width: ${(props): string => (props.$compact ? '34px' : '40px')};
+  height: ${(props): string => (props.$compact ? '34px' : '40px')};
+  box-shadow: ${theme.shadow.glow};
+  outline: none;
+`
+
+export const VolumeSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: ${theme.color.textTertiary};
+  justify-self: end;
+`
+
+const rangeBase = `
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  height: 3px;
+  border-radius: ${theme.radius.pill};
+  background-repeat: no-repeat;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 11px;
+    height: 11px;
+    background: ${theme.color.text};
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(143, 149, 204, 0.3);
+    transition: transform 0.15s ease;
+  }
+
+  &:hover::-webkit-slider-thumb {
+    transform: scale(1.15);
+  }
+
+  &::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+    background: ${theme.color.text};
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
   }
 `
 
 export const Slider = styled.input`
-  width: 40%;
-  -webkit-appearance: none;
-  background-color: #8f95cc;
-  outline: none;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-  border-radius: 10px;
-  height: 5px;
-  margin-top: 5px;
-  margin-left: 4%;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background-color: #8f95cc;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  &::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    background-color: #8f95cc;
-    border-radius: 50%;
-    cursor: pointer;
-  }
+  width: 140px;
+  ${rangeBase}
 `
 
-export const SliderContainer = styled.div`
-  flex: 1;
+export const ProgressRow = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  color: ${theme.color.textTertiary};
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    flex-shrink: 0;
+    width: 32px;
+
+    &:last-of-type {
+      text-align: right;
+    }
+  }
 `
-export const DurationContainer = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
+
 export const DurationSlider = styled.input`
-  width: 20rem;
-  -webkit-appearance: none;
-  background-color: #8f95cc;
-  outline: none;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-  border-radius: 10px;
-  height: 5px;
-  margin-top: 8%;
-  &:hover {
-    opacity: 1;
-  }
-
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px; /* Increased width */
-    height: 20px; /* Increased height */
-    background-color: #8f95cc;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  &::-moz-range-thumb {
-    width: 20px; /* Increased width */
-    height: 20px; /* Increased height */
-    background-color: #8f95cc;
-    border-radius: 50%;
-    cursor: pointer;
-  }
+  flex: 1;
+  min-width: 0;
+  ${rangeBase}
 `

@@ -1,81 +1,110 @@
 import styled from '@emotion/styled'
+import { motion } from 'framer-motion'
+import { theme } from '@renderer/styles/theme'
 
 export const SidebarElement = styled.aside`
   position: fixed;
-  top: 30px;
-  left: 0;
-  height: 100%;
-  width: 14%;
-  background-color: #2e2f38;
-  color: white;
+  top: 46px;
+  left: 16px;
+  height: calc(100% - 62px);
+  width: 220px;
+  background: ${theme.color.panel};
+  backdrop-filter: ${theme.blur.md};
+  -webkit-backdrop-filter: ${theme.blur.md};
+  border: 1px solid ${theme.color.panelBorder};
+  border-radius: ${theme.radius.lg};
+  box-shadow: ${theme.shadow.soft};
+  color: ${theme.color.text};
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* This line is new */
-  align-items: center;
-  padding-left: 20px;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 20px 14px;
+  z-index: 900;
 `
 
 export const Nav = styled.nav`
-  &:first-child li:first-child {
-    margin-top: 20px;
-  }
-
-  &:last-child li:last-child {
-    margin-bottom: 90%;
-  }
-
-  &.blue-glow li a:hover {
-    text-shadow: 0 0 10px #8f95cc;
-    color: #8f95cc;
-  }
-
-  &.blue-glow li:hover svg {
-    fill: #8f95cc;
-  }
+  display: flex;
+  flex-direction: column;
 `
 
 export const SideItemList = styled.ul`
   list-style: none;
   padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
-  li {
-    margin-bottom: 20px;
-    a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-  }
+  gap: 4px;
 `
-export const SideItem = styled.li`
-  margin-bottom: 5%;
-  margin-left: -5%;
+
+export const SideItem = styled(motion.li)<{ $active?: boolean; $variant: 'amber' | 'lavender' }>`
+  position: relative;
+  border-radius: ${theme.radius.md};
+  overflow: hidden;
+
   a {
-    display: flex; /* Makes the a element a flex container */
-    flex-direction: row; /* Aligns the SVG and the text horizontally */
-    align-items: center; /* Centers the SVG and the text vertically */
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: ${(props) => (props.$active ? 600 : 500)};
+    color: ${(props) => (props.$active ? theme.color.text : theme.color.textSecondary)};
+    text-decoration: none;
+    cursor: pointer;
     transition:
-      transform 0.3s ease-in-out,
-      text-shadow 0.3s ease-in-out,
-      color 0.3s ease-in-out;
-    &:hover {
-      transform: scale(1.1);
-      text-shadow: 0 0 10px #ccab8f;
-      color: #ccab8f;
-    }
+      color 0.25s ease,
+      transform 0.25s ${theme.easeCss};
   }
+
   svg {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-    transition: fill 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    transition: fill 0.25s ease;
+  }
+
+  &:hover a {
+    color: ${(props) => (props.$variant === 'amber' ? theme.color.amber : theme.color.accent)};
   }
 
   &:hover svg {
-    fill: #ccab8f;
+    fill: ${(props) => (props.$variant === 'amber' ? theme.color.amber : theme.color.accent)};
+  }
+`
+
+export const ActivePill = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  border-radius: ${theme.radius.md};
+  background: ${theme.color.panelActive};
+  border: 1px solid ${theme.color.panelBorderHover};
+`
+
+export const Divider = styled.div`
+  height: 1px;
+  margin: 14px 6px;
+  background: ${theme.color.panelBorder};
+`
+
+export const BrandRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 18px 10px;
+
+  span {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    background: ${theme.color.accentGradient};
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 `

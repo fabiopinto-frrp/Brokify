@@ -3,8 +3,12 @@
 .appContainer {
   width: 100vw;
   height: 100vh;
-  background-color: #202127;
-  border-radius: 10px !important;
+  background:
+    radial-gradient(1200px circle at 15% -10%, rgba(143, 149, 204, 0.1), transparent 55%),
+    radial-gradient(1000px circle at 100% 0%, rgba(224, 187, 154, 0.06), transparent 45%),
+    #0b0b0e;
+  border-radius: 14px !important;
+  overflow: hidden;
 }
 
 body {
@@ -12,9 +16,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image: url('./wavy-lines.svg');
   background-color: transparent !important;
-  background-size: cover;
   user-select: none;
 }
 
@@ -40,7 +42,7 @@ code {
   justify-content: center;
   flex-direction: column;
   margin-bottom: 80px;
-  background-color: #202127 !important;
+  background-color: transparent !important;
 }
 
 .logo {

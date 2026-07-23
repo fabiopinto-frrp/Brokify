@@ -1,25 +1,41 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useStore } from '../../stores/store'
 import { FaPlay, FaPause, FaVolumeDown, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
 import { IoVolumeMedium } from 'react-icons/io5'
-import { MdOutlineRestartAlt } from 'react-icons/md'
+import { MdSkipNext, MdSkipPrevious, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md'
+import { theme } from '@renderer/styles/theme'
 import {
+  MediaPlayerDock,
   MediaPlayerContainer,
+  PlayerHeaderRow,
+  CollapseToggle,
+  CollapsedRow,
+  ControlsRow,
+  NowPlayingSection,
   ImageContainer,
-  SliderContainer,
-  ButtonContainer,
+  TrackInfo,
+  TrackTitle,
+  TrackArtist,
+  TransportControls,
+  VolumeSection,
   Button,
+  PlayButton,
   Slider,
   EmptyImageContainer,
-  DurationContainer,
-  MediaButtonContainer,
+  ProgressRow,
   DurationSlider
 } from './MediaPlayerElement'
 
+const sliderFill = (percent: number): React.CSSProperties => ({
+  background: `linear-gradient(to right, ${theme.color.accent} ${percent}%, rgba(255, 255, 255, 0.14) ${percent}%)`
+})
+
 const MediaPlayer: React.FC = () => {
   const {
-    selectedItem,
+    currentTrack,
+    playNext,
+    playPrevious,
     volume,
     setVolume,
     playing,
@@ -32,6 +48,7 @@ const MediaPlayer: React.FC = () => {
     setIsVisible
   } = useStore()
   const playerRef = useRef<ReactPlayer>(null)
+  const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
     const visibilityTimer = setTimeout(() => {
@@ -39,15 +56,6 @@ const MediaPlayer: React.FC = () => {
     }, 4200)
     return () => clearTimeout(visibilityTimer)
   }, [setIsVisible])
-
-  useEffect(() => {
-    if (selectedItem) {
-      const playTimer = setTimeout(() => {
-        setPlaying(true)
-      }, 1000)
-      return () => clearTimeout(playTimer)
-    }
-  }, [selectedItem, setPlaying])
 
   const handlePlay = (): void => {
     setPlaying(true)
@@ -64,15 +72,15 @@ const MediaPlayer: React.FC = () => {
 
   const getVolumeIcon = (): JSX.Element => {
     if (volume === 0) {
-      return <FaVolumeMute size={20} />
+      return <FaVolumeMute size={16} />
     } else if (volume > 0 && volume <= 40) {
-      return <FaVolumeDown size={20} />
+      return <FaVolumeDown size={16} />
     } else if (volume > 40 && volume <= 80) {
-      return <IoVolumeMedium size={30} />
+      return <IoVolumeMedium size={18} />
     } else if (volume > 80) {
-      return <FaVolumeUp size={36} />
+      return <FaVolumeUp size={18} />
     }
-    return <FaVolumeMute size={30} />
+    return <FaVolumeMute size={16} />
   }
 
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -89,60 +97,182 @@ const MediaPlayer: React.FC = () => {
 
   return (
     isVisible && (
-      <MediaPlayerContainer>
-        {selectedItem && selectedItem.snippet.thumbnails.default.url ? (
-          <ImageContainer>
-            <img src={selectedItem.snippet.thumbnails.default.url} alt="thumbnail" />
-          </ImageContainer>
-        ) : (
-          <EmptyImageContainer></EmptyImageContainer>
-        )}
-        <MediaButtonContainer>
-          <ButtonContainer>
-            <Button onClick={() => playerRef.current?.seekTo(0)}>
-              <MdOutlineRestartAlt size={20} />
-            </Button>
-            {playing ? (
-              <Button onClick={handlePause}>
-                <FaPause size={20} />
-              </Button>
-            ) : (
-              <Button onClick={handlePlay}>
-                <FaPlay size={20} />
-              </Button>
-            )}
-          </ButtonContainer>
-          <DurationContainer>
-            <span>{formatDuration(playedSeconds)}</span>
-            <DurationSlider
-              type="range"
-              min="0"
-              max={duration}
-              value={playedSeconds}
-              onChange={handleTimeChange}
-            />
-            <span>{formatDuration(duration)}</span>
-          </DurationContainer>
-        </MediaButtonContainer>
-        <SliderContainer>
-          {getVolumeIcon()}
-          <Slider type="range" min="0" max="100" value={volume} onChange={handleVolumeChange} />
-        </SliderContainer>
+      <MediaPlayerDock>
+        <MediaPlayerContainer
+          layout
+          $collapsed={collapsed}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 220, damping: 26 }}
+        >
+          {!collapsed && (
+            <PlayerHeaderRow>
+              <CollapseToggle
+                onClick={() => setCollapsed(true)}
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.9 }}
+                title="Collapse player"
+              >
+                <MdKeyboardArrowDown size={20} />
+              </CollapseToggle>
+            </PlayerHeaderRow>
+          )}
 
-        <ReactPlayer
-          ref={playerRef}
-          url={`https://www.youtube.com/watch?v=${selectedItem.id.videoId}`}
-          playing={playing}
-          volume={volume / 100}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onDuration={(duration) => setDuration(duration)}
-          onProgress={({ playedSeconds }) => setPlayedSeconds(playedSeconds)}
-          width={0}
-          height={0}
-          style={{ display: 'none' }}
-        />
-      </MediaPlayerContainer>
+          {collapsed ? (
+            <CollapsedRow>
+              <NowPlayingSection>
+                {currentTrack?.thumbnail ? (
+                  <ImageContainer $compact>
+                    <img src={currentTrack.thumbnail} alt="thumbnail" />
+                  </ImageContainer>
+                ) : (
+                  <EmptyImageContainer $compact></EmptyImageContainer>
+                )}
+                <TrackInfo>
+                  <TrackTitle>{currentTrack?.title || 'No track selected'}</TrackTitle>
+                </TrackInfo>
+              </NowPlayingSection>
+
+              {playing ? (
+                <PlayButton
+                  $compact
+                  onClick={handlePause}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                >
+                  <FaPause size={12} />
+                </PlayButton>
+              ) : (
+                <PlayButton
+                  $compact
+                  onClick={handlePlay}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                >
+                  <FaPlay size={12} style={{ position: 'relative', left: 1 }} />
+                </PlayButton>
+              )}
+
+              <CollapseToggle
+                onClick={() => setCollapsed(false)}
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.9 }}
+                title="Expand player"
+                style={{ marginLeft: 'auto' }}
+              >
+                <MdKeyboardArrowUp size={20} />
+              </CollapseToggle>
+            </CollapsedRow>
+          ) : (
+            <>
+              <ControlsRow>
+                <NowPlayingSection>
+                  {currentTrack?.thumbnail ? (
+                    <ImageContainer>
+                      <img src={currentTrack.thumbnail} alt="thumbnail" />
+                    </ImageContainer>
+                  ) : (
+                    <EmptyImageContainer></EmptyImageContainer>
+                  )}
+                  <TrackInfo>
+                    <TrackTitle>{currentTrack?.title || 'No track selected'}</TrackTitle>
+                    <TrackArtist>{currentTrack?.artist || '—'}</TrackArtist>
+                  </TrackInfo>
+                </NowPlayingSection>
+
+                <TransportControls>
+                  <Button
+                    onClick={playPrevious}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.92 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                  >
+                    <MdSkipPrevious size={20} />
+                  </Button>
+                  {playing ? (
+                    <PlayButton
+                      onClick={handlePause}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                    >
+                      <FaPause size={14} />
+                    </PlayButton>
+                  ) : (
+                    <PlayButton
+                      onClick={handlePlay}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                    >
+                      <FaPlay size={14} style={{ position: 'relative', left: 1 }} />
+                    </PlayButton>
+                  )}
+                  <Button
+                    onClick={playNext}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.92 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                  >
+                    <MdSkipNext size={20} />
+                  </Button>
+                </TransportControls>
+
+                <VolumeSection>
+                  {getVolumeIcon()}
+                  <Slider
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    style={sliderFill(volume)}
+                  />
+                </VolumeSection>
+              </ControlsRow>
+
+              <ProgressRow>
+                <span>{formatDuration(playedSeconds)}</span>
+                <DurationSlider
+                  type="range"
+                  min="0"
+                  max={duration}
+                  value={playedSeconds}
+                  onChange={handleTimeChange}
+                  style={sliderFill(duration > 0 ? (playedSeconds / duration) * 100 : 0)}
+                />
+                <span>{formatDuration(duration)}</span>
+              </ProgressRow>
+            </>
+          )}
+
+          {currentTrack && (
+            <ReactPlayer
+              ref={playerRef}
+              url={`https://www.youtube.com/watch?v=${currentTrack.videoId}`}
+              playing={playing}
+              volume={volume / 100}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onEnded={playNext}
+              onDuration={(newDuration) => setDuration(newDuration)}
+              onProgress={({ playedSeconds }) => {
+                setPlayedSeconds(playedSeconds)
+                if (!duration) {
+                  const liveDuration = playerRef.current?.getDuration()
+                  if (liveDuration) setDuration(liveDuration)
+                }
+              }}
+              progressInterval={500}
+              width={0}
+              height={0}
+              style={{ display: 'none' }}
+            />
+          )}
+        </MediaPlayerContainer>
+      </MediaPlayerDock>
     )
   )
 }

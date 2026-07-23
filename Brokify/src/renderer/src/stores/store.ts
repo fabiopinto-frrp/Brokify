@@ -45,21 +45,11 @@ type YouTubeSearchResponse = {
   items: SearchResultItem[]
 }
 
-type Video = {
-  id: {
-    videoId: string
-  }
-  snippet: {
-    title: string
-    description: string
-    thumbnails: {
-      default: {
-        url: string
-      }
-    }
-    channelTitle: string
-    publishTime: string
-  }
+export type Track = {
+  videoId: string
+  title: string
+  artist: string
+  thumbnail: string
 }
 
 type State = {
@@ -73,8 +63,14 @@ type State = {
   searchBarInputValue: string
   apiKey: string
   setApiKey: (value: string) => void
-  selectedItem: Video
-  setSelectedItem: (value: Video) => void
+  queue: Track[]
+  queueIndex: number
+  currentTrack: Track | null
+  playQueue: (tracks: Track[], startIndex?: number) => void
+  playNext: () => void
+  playPrevious: () => void
+  jumpToIndex: (index: number) => void
+  shuffleQueue: () => void
   streamUrl: string
   setStreamUrl: (value: string) => void
   volume: number
@@ -90,7 +86,7 @@ type State = {
 }
 
 // Update the useStore definition
-export const useStore = create<State>((set) => ({
+export const useStore = create<State>((set, get) => ({
   hovering: '',
   setHovering: (value: string): void => set(() => ({ hovering: value })),
   loading: false,
@@ -108,23 +104,68 @@ export const useStore = create<State>((set) => ({
   searchBarInputValue: '',
   apiKey: '',
   setApiKey: (value: string): void => set(() => ({ apiKey: value })),
-  selectedItem: {
-    id: {
-      videoId: ''
-    },
-    snippet: {
-      title: '',
-      description: '',
-      thumbnails: {
-        default: {
-          url: ''
-        }
-      },
-      channelTitle: '',
-      publishTime: ''
+  queue: [],
+  queueIndex: 0,
+  currentTrack: null,
+  playQueue: (tracks: Track[], startIndex = 0): void =>
+    set(() => ({
+      queue: tracks,
+      queueIndex: startIndex,
+      currentTrack: tracks[startIndex] ?? null,
+      playing: true,
+      isVisible: true,
+      playedSeconds: 0,
+      duration: 0
+    })),
+  playNext: (): void => {
+    const { queue, queueIndex } = get()
+    const nextIndex = queueIndex + 1
+    if (nextIndex >= queue.length) {
+      set(() => ({ playing: false }))
+      return
     }
+    set(() => ({
+      queueIndex: nextIndex,
+      currentTrack: queue[nextIndex],
+      playing: true,
+      playedSeconds: 0,
+      duration: 0
+    }))
   },
-  setSelectedItem: (value: Video): void => set(() => ({ selectedItem: value })),
+  playPrevious: (): void => {
+    const { queue, queueIndex } = get()
+    const prevIndex = queueIndex - 1
+    if (prevIndex < 0) return
+    set(() => ({
+      queueIndex: prevIndex,
+      currentTrack: queue[prevIndex],
+      playing: true,
+      playedSeconds: 0,
+      duration: 0
+    }))
+  },
+  jumpToIndex: (index: number): void => {
+    const { queue } = get()
+    if (index < 0 || index >= queue.length) return
+    set(() => ({
+      queueIndex: index,
+      currentTrack: queue[index],
+      playing: true,
+      playedSeconds: 0,
+      duration: 0
+    }))
+  },
+  shuffleQueue: (): void => {
+    const { queue, queueIndex } = get()
+    if (queue.length < 2) return
+    const current = queue[queueIndex]
+    const rest = queue.filter((_, i) => i !== queueIndex)
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[rest[i], rest[j]] = [rest[j], rest[i]]
+    }
+    set(() => ({ queue: [current, ...rest], queueIndex: 0 }))
+  },
   streamUrl: '',
   setStreamUrl: (value: string): void => set(() => ({ streamUrl: value })),
   volume: 50,

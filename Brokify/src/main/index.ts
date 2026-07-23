@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import dotenv from 'dotenv'
+import { registerDatabaseIpcHandlers } from './database/ipc'
 
 let iconPath = join(__dirname, '../../build/icon.png')
 
@@ -80,6 +81,8 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('ping', () => console.log('pong'))
+
+  registerDatabaseIpcHandlers()
 
   createWindow()
 
